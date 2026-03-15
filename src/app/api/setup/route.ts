@@ -15,7 +15,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Email, password, and name are required" }, { status: 400 });
     }
 
-    const ctx = await auth.api.signUpEmail({
+    // Delete existing user if present
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      await prisma.session.deleteMany({ where: { userId: existing.id } });
+      await prisma.account.deleteMany({ where: { userId: existing.id } });
+      await prisma.user.delete({ where: { id: existing.id } });
+    }
+
+    // Create user through Better Auth
+    await auth.api.signUpEmail({
       body: { email, password, name },
     });
 
