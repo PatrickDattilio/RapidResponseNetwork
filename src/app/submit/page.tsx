@@ -53,12 +53,13 @@ export default function SubmitPage() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const formEl = e.currentTarget;
     setLoading(true);
     setError("");
 
     const recaptchaToken = await getRecaptchaToken();
 
-    const form = new FormData(e.currentTarget);
+    const form = new FormData(formEl);
 
     const data = {
       name: form.get("name") as string,
