@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "../src/generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
 import { scrypt, randomBytes } from "crypto";
 import { promisify } from "util";
 
@@ -13,7 +14,8 @@ async function hashPassword(password: string): Promise<string> {
 }
 
 async function main() {
-  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+  const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL! });
+  const adapter = new PrismaPg(pool);
   const prisma = new PrismaClient({ adapter });
 
   const email = process.argv[2] || "admin@example.com";

@@ -1,8 +1,10 @@
 import "dotenv/config";
 import { PrismaClient } from "../src/generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL! });
+const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 const sampleGroups = [
@@ -19,6 +21,7 @@ const sampleGroups = [
       "Community group fighting for affordable housing and tenant protections in the Portland metro area.",
     memberCount: "51–100",
     status: "APPROVED" as const,
+    isSeed: true,
     approvedAt: new Date(),
   },
   {
@@ -34,6 +37,7 @@ const sampleGroups = [
       "A network of volunteers providing rapid response to immigration enforcement actions across all five boroughs.",
     memberCount: "100+",
     status: "APPROVED" as const,
+    isSeed: true,
     approvedAt: new Date(),
   },
   {
@@ -49,6 +53,7 @@ const sampleGroups = [
       "Monitoring and responding to environmental threats in Central Texas communities.",
     memberCount: "11–50",
     status: "APPROVED" as const,
+    isSeed: true,
     approvedAt: new Date(),
   },
   {
@@ -64,6 +69,7 @@ const sampleGroups = [
       "Supporting workers' rights and fair labor practices across the Chicagoland area.",
     memberCount: "100+",
     status: "APPROVED" as const,
+    isSeed: true,
     approvedAt: new Date(),
   },
   {
@@ -79,6 +85,7 @@ const sampleGroups = [
       "Community-based disaster preparedness and rapid relief for South Florida hurricane and flooding events.",
     memberCount: "51–100",
     status: "PENDING" as const,
+    isSeed: true,
   },
 ];
 
@@ -86,7 +93,7 @@ async function main() {
   console.log("Seeding database...");
 
   for (const group of sampleGroups) {
-    await prisma.group.create({ data: { ...group, isSeed: true } });
+    await prisma.group.create({ data: group });
     console.log(`  Created: ${group.name}`);
   }
 
