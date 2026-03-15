@@ -80,18 +80,18 @@ export async function POST(request: NextRequest) {
 
     const group = await prisma.group.create({
       data: {
-        name,
-        city,
-        state,
+        name: String(name),
+        city: String(city),
+        state: String(state),
         lat,
         lng,
-        contactName,
-        contactEmail,
-        phone: phone || null,
-        focusAreas: focusAreas || [],
-        description,
-        website: website || null,
-        memberCount,
+        contactName: String(contactName),
+        contactEmail: String(contactEmail),
+        phone: phone ? String(phone) : null,
+        focusAreas: Array.isArray(focusAreas) ? focusAreas.map(String) : [],
+        description: String(description),
+        website: website ? String(website) : null,
+        memberCount: String(memberCount),
       },
     });
 
