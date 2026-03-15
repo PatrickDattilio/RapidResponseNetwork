@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rapid Response Network
+
+A civic-action platform where people can find or register rapid response groups in their area, featuring an interactive map of the United States and a secure admin backend for approving submissions.
+
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **Database**: PostgreSQL with Prisma ORM
+- **Auth**: Better Auth (email/password)
+- **Styling**: Tailwind CSS v4 + shadcn/ui
+- **Map**: React Leaflet (OpenStreetMap)
+- **Geocoding**: Nominatim (free, no API key)
+- **Hosting**: Optimized for Railway
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js 18+
+- PostgreSQL database (local or Railway)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Configure environment:**
+   ```bash
+   cp .env.example .env
+   ```
+   Edit `.env` with your database URL and a random auth secret.
 
-## Learn More
+3. **Set up the database:**
+   ```bash
+   npm run db:push
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. **Create an admin user:**
+   ```bash
+   npm run db:create-admin -- admin@example.com yourpassword "Admin Name"
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. **(Optional) Seed sample data:**
+   ```bash
+   npm run db:seed
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+6. **Start the dev server:**
+   ```bash
+   npm run dev
+   ```
 
-## Deploy on Vercel
+   Open [http://localhost:3000](http://localhost:3000)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Pages
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Page | Path | Description |
+|------|------|-------------|
+| Map / Home | `/` | Interactive map with approved group pins |
+| Submit Group | `/submit` | Public form to register a new group |
+| About | `/about` | Info about the network and FAQ |
+| Admin Login | `/admin/login` | Admin authentication |
+| Admin Dashboard | `/admin` | Manage submissions (approve/reject/edit) |
+| Edit Group | `/admin/groups/[id]` | Edit group details |
+
+## Railway Deployment
+
+1. Create a new Railway project
+2. Add a PostgreSQL service
+3. Connect your GitHub repo — Railway auto-detects Next.js
+4. Set environment variables in the Railway dashboard:
+   - `BETTER_AUTH_SECRET` — generate with `openssl rand -base64 32`
+   - `BETTER_AUTH_URL` — your Railway app URL
+   - `DATABASE_URL` — auto-injected by Railway
+5. Railway runs `npm run build` which auto-generates the Prisma client
+6. After first deploy, run `npm run db:push` and `npm run db:create-admin` via Railway CLI
+
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Production build |
+| `npm run db:push` | Push schema to database |
+| `npm run db:migrate` | Run migrations |
+| `npm run db:studio` | Open Prisma Studio |
+| `npm run db:seed` | Seed sample data |
+| `npm run db:create-admin` | Create admin user |
+
+## License
+
+MIT
