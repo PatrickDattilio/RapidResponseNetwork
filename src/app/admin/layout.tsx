@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
@@ -18,15 +19,45 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [checking, setChecking] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+
+  useEffect(() => {
+    if (pathname === "/admin/login") {
+      setChecking(false);
+      return;
+    }
+
+    authClient.getSession().then(({ data }) => {
+      if (!data?.user) {
+        window.location.href = "/admin/login";
+      } else {
+        setAuthenticated(true);
+        setChecking(false);
+      }
+    }).catch(() => {
+      window.location.href = "/admin/login";
+    });
+  }, [pathname]);
 
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
 
+  if (checking || !authenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-2">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-sm text-muted-foreground">Verifying access...</p>
+        </div>
+      </div>
+    );
+  }
+
   async function handleLogout() {
     await authClient.signOut();
-    router.push("/admin/login");
-    router.refresh();
+    window.location.href = "/admin/login";
   }
 
   return (
