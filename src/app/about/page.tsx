@@ -5,7 +5,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import {
   MapPin,
@@ -13,162 +12,156 @@ import {
   ShieldCheck,
   HandHelping,
   ArrowRight,
+  ChevronDown,
 } from "lucide-react";
+
+const features = [
+  {
+    icon: MapPin,
+    title: "Map the Network",
+    description:
+      "Our interactive map shows verified rapid response groups across every state, making it easy to find support near you.",
+  },
+  {
+    icon: Users,
+    title: "Connect Communities",
+    description:
+      "We help grassroots organizations connect with people who care about housing, labor, immigration, environment, and more.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Verified Groups",
+    description:
+      "Every group on our map is reviewed and approved by administrators to ensure legitimacy and community safety.",
+  },
+  {
+    icon: HandHelping,
+    title: "Empower Action",
+    description:
+      "We believe in the power of organized community response. Our platform makes it easy to find, join, or start a group.",
+  },
+];
+
+const faqs = [
+  {
+    q: "How do I add my group to the map?",
+    a: 'Click "Add Your Group" in the navigation or visit the submission page. Fill out the form and submit — an administrator will review your group and approve it to appear on the map.',
+  },
+  {
+    q: "How long does approval take?",
+    a: "We aim to review all submissions within 48 hours. You'll receive an email notification once your group has been approved.",
+  },
+  {
+    q: "Is my contact information public?",
+    a: "No. Contact email and phone are only visible to administrators for review purposes. Only your group name, location, description, and focus areas are shown on the map.",
+  },
+  {
+    q: "What types of groups can register?",
+    a: "Any community-based organization focused on rapid response and civic action is welcome — from neighborhood coalitions to statewide networks. Groups must be non-violent and committed to community well-being.",
+  },
+  {
+    q: "Is this platform free?",
+    a: "Yes, completely. The Rapid Response Network is a free, open-source civic tool.",
+  },
+];
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-      <div className="mb-10">
-        <h1 className="text-4xl font-bold tracking-tight">
-          About the Rapid Response Network
+    <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
+      {/* Hero */}
+      <div className="mb-16 text-center">
+        <h1 className="animate-fade-up text-4xl font-extrabold tracking-tight sm:text-5xl">
+          About the{" "}
+          <span className="text-gradient">Rapid Response Network</span>
         </h1>
-        <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-          The Rapid Response Network is a civic-action platform that connects
-          communities with organized rapid response groups across the United
-          States. Whether you&apos;re looking for support or ready to mobilize,
-          this is your starting point.
+        <p className="animate-fade-up stagger-1 mx-auto mt-4 max-w-2xl text-lg text-muted-foreground leading-relaxed">
+          A civic-action platform that connects communities with organized rapid
+          response groups across the United States. Whether you&apos;re looking for
+          support or ready to mobilize, this is your starting point.
         </p>
       </div>
 
-      <Separator className="my-8" />
-
-      <section className="mb-10">
-        <h2 className="text-2xl font-semibold mb-6">What We Do</h2>
+      {/* What We Do */}
+      <section className="mb-16">
+        <h2 className="animate-fade-up mb-8 text-center text-2xl font-bold">
+          What We Do
+        </h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Card>
-            <CardHeader className="pb-3">
-              <MapPin className="h-8 w-8 text-primary mb-2" />
-              <CardTitle className="text-base">Map the Network</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Our interactive map shows verified rapid response groups across
-              every state, making it easy to find support near you.
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-3">
-              <Users className="h-8 w-8 text-primary mb-2" />
-              <CardTitle className="text-base">Connect Communities</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              We help grassroots organizations connect with people who care about
-              housing, labor, immigration, environment, and more.
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-3">
-              <ShieldCheck className="h-8 w-8 text-primary mb-2" />
-              <CardTitle className="text-base">Verified Groups</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Every group on our map is reviewed and approved by administrators
-              to ensure legitimacy and community safety.
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-3">
-              <HandHelping className="h-8 w-8 text-primary mb-2" />
-              <CardTitle className="text-base">Empower Action</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              We believe in the power of organized community response. Our
-              platform makes it easy to find, join, or start a group.
-            </CardContent>
-          </Card>
+          {features.map((feature, i) => (
+            <Card
+              key={feature.title}
+              className={`card-hover animate-fade-up stagger-${i + 1} border-border/50`}
+            >
+              <CardHeader className="pb-3">
+                <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                  <feature.icon className="h-5 w-5 text-primary" />
+                </div>
+                <CardTitle className="text-base">{feature.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                {feature.description}
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </section>
 
-      <Separator className="my-8" />
-
-      <section className="mb-10">
-        <h2 className="text-2xl font-semibold mb-4">
-          What is &ldquo;Rapid Response&rdquo;?
-        </h2>
-        <p className="text-muted-foreground leading-relaxed">
-          Rapid response refers to organized community groups that can quickly
-          mobilize to address urgent situations — whether that&apos;s supporting
-          neighbors facing eviction, responding to immigration enforcement
-          actions, providing disaster relief, advocating for workers&apos;
-          rights, or protecting environmental justice. These groups are the
-          backbone of community resilience.
-        </p>
+      {/* What is Rapid Response */}
+      <section className="mb-16">
+        <div className="animate-fade-up rounded-2xl border bg-gradient-to-br from-primary/5 to-transparent p-8 sm:p-10">
+          <h2 className="text-2xl font-bold mb-4">
+            What is &ldquo;Rapid Response&rdquo;?
+          </h2>
+          <p className="text-muted-foreground leading-relaxed">
+            Rapid response refers to organized community groups that can quickly
+            mobilize to address urgent situations — whether that&apos;s supporting
+            neighbors facing eviction, responding to immigration enforcement
+            actions, providing disaster relief, advocating for workers&apos;
+            rights, or protecting environmental justice. These groups are the
+            backbone of community resilience.
+          </p>
+        </div>
       </section>
 
-      <Separator className="my-8" />
-
-      <section className="mb-10">
-        <h2 className="text-2xl font-semibold mb-4">
+      {/* FAQ */}
+      <section className="mb-16">
+        <h2 className="animate-fade-up mb-8 text-center text-2xl font-bold">
           Frequently Asked Questions
         </h2>
-        <div className="space-y-6">
-          <div>
-            <h3 className="font-medium">How do I add my group to the map?</h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Click &ldquo;Add Your Group&rdquo; in the navigation or visit the{" "}
-              <Link href="/submit" className="text-primary underline">
-                submission page
-              </Link>
-              . Fill out the form and submit — an administrator will review your
-              group and approve it to appear on the map.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-medium">
-              How long does approval take?
-            </h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              We aim to review all submissions within 48 hours. You&apos;ll
-              receive an email notification once your group has been approved.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-medium">
-              Is my contact information public?
-            </h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              No. Contact email and phone are only visible to administrators for
-              review purposes. Only your group name, location, description, and
-              focus areas are shown on the map.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-medium">
-              What types of groups can register?
-            </h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Any community-based organization focused on rapid response and
-              civic action is welcome — from neighborhood coalitions to
-              statewide networks. Groups must be non-violent and committed to
-              community well-being.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-medium">Is this platform free?</h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Yes, completely. The Rapid Response Network is a free,
-              open-source civic tool.
-            </p>
-          </div>
+        <div className="space-y-3">
+          {faqs.map((faq, i) => (
+            <details
+              key={i}
+              className={`animate-fade-up stagger-${i + 1} group rounded-xl border bg-card transition-colors hover:bg-accent/50`}
+            >
+              <summary className="flex cursor-pointer items-center justify-between px-5 py-4 text-sm font-medium [&::-webkit-details-marker]:hidden">
+                {faq.q}
+                <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
+              </summary>
+              <div className="border-t px-5 py-4 text-sm text-muted-foreground leading-relaxed">
+                {faq.a}
+              </div>
+            </details>
+          ))}
         </div>
       </section>
 
-      <Separator className="my-8" />
-
-      <div className="flex flex-col items-center gap-4 rounded-lg bg-muted p-8 text-center">
-        <h2 className="text-xl font-semibold">Ready to get involved?</h2>
-        <p className="text-sm text-muted-foreground max-w-md">
+      {/* CTA */}
+      <div className="animate-fade-up flex flex-col items-center gap-5 rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border p-10 text-center">
+        <h2 className="text-2xl font-bold">Ready to get involved?</h2>
+        <p className="text-muted-foreground max-w-md">
           Whether you want to find support in your area or register your own
           group, the network is here for you.
         </p>
         <div className="flex gap-3">
           <Link href="/">
-            <Button variant="outline" className="gap-1.5">
+            <Button variant="outline" size="lg" className="gap-2">
               <MapPin className="h-4 w-4" />
               Explore the Map
             </Button>
           </Link>
           <Link href="/submit">
-            <Button className="gap-1.5">
+            <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
               Add Your Group
               <ArrowRight className="h-4 w-4" />
             </Button>

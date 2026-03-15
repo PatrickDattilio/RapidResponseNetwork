@@ -100,11 +100,61 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      <div className="space-y-6">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i} className="border-border/50">
+              <CardHeader className="pb-2">
+                <div className="h-4 w-20 rounded animate-shimmer" />
+              </CardHeader>
+              <CardContent>
+                <div className="h-8 w-16 rounded animate-shimmer" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <Card className="border-border/50">
+          <CardContent className="flex h-64 items-center justify-center">
+            <div className="flex flex-col items-center gap-3">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary/30 border-t-primary" />
+              <p className="text-sm text-muted-foreground">Loading dashboard...</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
+
+  const statCards = [
+    {
+      title: "Total Groups",
+      value: stats?.total ?? 0,
+      icon: BarChart3,
+      color: "text-foreground",
+      bg: "bg-foreground/5",
+    },
+    {
+      title: "Approved",
+      value: stats?.approved ?? 0,
+      icon: MapPin,
+      color: "text-green-600 dark:text-green-400",
+      bg: "bg-green-500/10",
+    },
+    {
+      title: "Pending",
+      value: stats?.pending ?? 0,
+      icon: Clock,
+      color: "text-amber-600 dark:text-amber-400",
+      bg: "bg-amber-500/10",
+    },
+    {
+      title: "States Covered",
+      value: stats?.byState.length ?? 0,
+      icon: Users,
+      color: "text-primary",
+      bg: "bg-primary/10",
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -123,54 +173,25 @@ export default function AdminDashboard() {
         </a>
       </div>
 
-      {stats && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {statCards.map((stat, i) => (
+          <Card key={stat.title} className={`animate-fade-up stagger-${i + 1} card-hover border-border/50`}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Groups</CardTitle>
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.total}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Approved</CardTitle>
-              <MapPin className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                {stats.approved}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Pending</CardTitle>
-              <Clock className="h-4 w-4 text-yellow-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">
-                {stats.pending}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">
-                States Covered
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                {stat.title}
               </CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${stat.bg}`}>
+                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {stats.byState.length}
+              <div className={`text-3xl font-bold ${stat.color}`}>
+                {stat.value}
               </div>
             </CardContent>
           </Card>
-        </div>
-      )}
+        ))}
+      </div>
 
       <div className="flex gap-2">
         {(["PENDING", "APPROVED", "REJECTED", "ALL"] as const).map((status) => (
@@ -179,6 +200,7 @@ export default function AdminDashboard() {
             variant={filter === status ? "default" : "outline"}
             size="sm"
             onClick={() => setFilter(status)}
+            className={filter === status ? "shadow-sm shadow-primary/20" : ""}
           >
             {status === "ALL" ? "All" : status.charAt(0) + status.slice(1).toLowerCase()}
             {status !== "ALL" && (
@@ -190,11 +212,11 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      <Card>
+      <Card className="animate-fade-up border-border/50 shadow-sm">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="hover:bg-transparent">
                 <TableHead>Group</TableHead>
                 <TableHead className="hidden sm:table-cell">Location</TableHead>
                 <TableHead className="hidden md:table-cell">Contact</TableHead>
@@ -206,13 +228,16 @@ export default function AdminDashboard() {
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
-                    No groups found
+                  <TableCell colSpan={6} className="h-32 text-center">
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                      <MapPin className="h-8 w-8 opacity-30" />
+                      <p className="text-sm">No groups found</p>
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : (
                 filtered.map((group) => (
-                  <TableRow key={group.id}>
+                  <TableRow key={group.id} className="group/row">
                     <TableCell>
                       <div>
                         <div className="font-medium">{group.name}</div>
@@ -222,7 +247,8 @@ export default function AdminDashboard() {
                       </div>
                     </TableCell>
                     <TableCell className="hidden sm:table-cell">
-                      <div className="text-sm">
+                      <div className="flex items-center gap-1 text-sm">
+                        <MapPin className="h-3 w-3 text-muted-foreground" />
                         {group.city}, {group.state}
                       </div>
                     </TableCell>
@@ -244,6 +270,13 @@ export default function AdminDashboard() {
                             ? "secondary"
                             : "destructive"
                         }
+                        className={
+                          group.status === "APPROVED"
+                            ? "bg-green-500/15 text-green-700 dark:text-green-400 hover:bg-green-500/25 border-0"
+                            : group.status === "PENDING"
+                            ? "bg-amber-500/15 text-amber-700 dark:text-amber-400 hover:bg-amber-500/25 border-0"
+                            : "bg-red-500/15 text-red-700 dark:text-red-400 hover:bg-red-500/25 border-0"
+                        }
                       >
                         {group.status}
                       </Badge>
@@ -255,7 +288,7 @@ export default function AdminDashboard() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+                              className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-500/10"
                               onClick={() => updateStatus(group.id, "APPROVED")}
                               title="Approve"
                             >
@@ -264,7 +297,7 @@ export default function AdminDashboard() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-500/10"
                               onClick={() => updateStatus(group.id, "REJECTED")}
                               title="Reject"
                             >

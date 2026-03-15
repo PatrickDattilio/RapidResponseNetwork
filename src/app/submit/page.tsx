@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { US_STATES, FOCUS_AREAS, MEMBER_COUNT_OPTIONS } from "@/lib/constants";
-import { CheckCircle, Send } from "lucide-react";
+import { CheckCircle, Send, FileText, User } from "lucide-react";
 
 declare global {
   interface Window {
@@ -106,10 +106,10 @@ export default function SubmitPage() {
   if (success) {
     return (
       <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-lg items-center justify-center px-4">
-        <Card className="w-full text-center">
+        <Card className="animate-fade-up w-full text-center shadow-lg">
           <CardHeader>
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-              <CheckCircle className="h-8 w-8 text-green-600" />
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+              <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
             </div>
             <CardTitle className="text-2xl">Submission Received!</CardTitle>
             <CardDescription className="text-base">
@@ -118,7 +118,7 @@ export default function SubmitPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => router.push("/")} className="w-full">
+            <Button onClick={() => router.push("/")} className="w-full gap-2 shadow-lg shadow-primary/20">
               Back to Map
             </Button>
           </CardContent>
@@ -128,21 +128,26 @@ export default function SubmitPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">
-          Register Your Group
+    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+      <div className="animate-fade-up mb-10 text-center">
+        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+          Register Your <span className="text-gradient">Group</span>
         </h1>
-        <p className="mt-2 text-muted-foreground">
+        <p className="mt-3 text-muted-foreground">
           Submit your rapid response group to be featured on our network map.
           All submissions are reviewed before appearing publicly.
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <Card>
+        <Card className="animate-fade-up stagger-1 card-hover border-border/50 shadow-sm">
           <CardHeader>
-            <CardTitle>Group Information</CardTitle>
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                <FileText className="h-4 w-4 text-primary" />
+              </div>
+              <CardTitle>Group Information</CardTitle>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -152,6 +157,7 @@ export default function SubmitPage() {
                 name="name"
                 required
                 placeholder="e.g., Portland Housing Coalition"
+                className="transition-shadow focus:shadow-md focus:shadow-primary/5"
               />
             </div>
 
@@ -163,6 +169,7 @@ export default function SubmitPage() {
                   name="city"
                   required
                   placeholder="e.g., Portland"
+                  className="transition-shadow focus:shadow-md focus:shadow-primary/5"
                 />
               </div>
               <div className="space-y-2">
@@ -171,7 +178,7 @@ export default function SubmitPage() {
                   id="state"
                   name="state"
                   required
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus:shadow-md focus:shadow-primary/5"
                 >
                   <option value="">Select a state</option>
                   {US_STATES.map((s) => (
@@ -192,6 +199,7 @@ export default function SubmitPage() {
                 maxLength={300}
                 rows={3}
                 placeholder="Briefly describe your group's mission and activities..."
+                className="transition-shadow focus:shadow-md focus:shadow-primary/5"
               />
             </div>
 
@@ -201,7 +209,11 @@ export default function SubmitPage() {
                 {FOCUS_AREAS.map((area) => (
                   <label
                     key={area}
-                    className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm cursor-pointer hover:bg-accent transition-colors"
+                    className={`flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm cursor-pointer transition-all duration-200 ${
+                      focusAreas.includes(area)
+                        ? "border-primary/50 bg-primary/5 text-foreground shadow-sm"
+                        : "hover:bg-accent hover:border-border"
+                    }`}
                   >
                     <Checkbox
                       checked={focusAreas.includes(area)}
@@ -219,7 +231,7 @@ export default function SubmitPage() {
                 id="memberCount"
                 name="memberCount"
                 required
-                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus:shadow-md focus:shadow-primary/5"
               >
                 <option value="">Select range</option>
                 {MEMBER_COUNT_OPTIONS.map((opt) => (
@@ -237,18 +249,26 @@ export default function SubmitPage() {
                 name="website"
                 type="url"
                 placeholder="https://"
+                className="transition-shadow focus:shadow-md focus:shadow-primary/5"
               />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="animate-fade-up stagger-2 card-hover border-border/50 shadow-sm">
           <CardHeader>
-            <CardTitle>Contact Information</CardTitle>
-            <CardDescription>
-              Contact details are used for admin review only and are not shown
-              publicly on the map.
-            </CardDescription>
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                <User className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <CardTitle>Contact Information</CardTitle>
+                <CardDescription className="mt-1">
+                  Contact details are used for admin review only and are not shown
+                  publicly on the map.
+                </CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -258,6 +278,7 @@ export default function SubmitPage() {
                 name="contactName"
                 required
                 placeholder="Your full name"
+                className="transition-shadow focus:shadow-md focus:shadow-primary/5"
               />
             </div>
 
@@ -269,6 +290,7 @@ export default function SubmitPage() {
                 type="email"
                 required
                 placeholder="you@example.com"
+                className="transition-shadow focus:shadow-md focus:shadow-primary/5"
               />
             </div>
 
@@ -279,18 +301,24 @@ export default function SubmitPage() {
                 name="phone"
                 type="tel"
                 placeholder="(555) 123-4567"
+                className="transition-shadow focus:shadow-md focus:shadow-primary/5"
               />
             </div>
           </CardContent>
         </Card>
 
         {error && (
-          <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+          <div className="animate-fade-up rounded-xl border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
             {error}
           </div>
         )}
 
-        <Button type="submit" className="w-full gap-2" size="lg" disabled={loading}>
+        <Button
+          type="submit"
+          className="animate-fade-up stagger-3 w-full gap-2 shadow-lg shadow-primary/20"
+          size="lg"
+          disabled={loading}
+        >
           {loading ? (
             <>
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -307,11 +335,11 @@ export default function SubmitPage() {
         {RECAPTCHA_SITE_KEY && (
           <p className="text-xs text-center text-muted-foreground">
             This site is protected by reCAPTCHA and the Google{" "}
-            <a href="https://policies.google.com/privacy" className="underline" target="_blank" rel="noopener noreferrer">
+            <a href="https://policies.google.com/privacy" className="underline hover:text-foreground transition-colors" target="_blank" rel="noopener noreferrer">
               Privacy Policy
             </a>{" "}
             and{" "}
-            <a href="https://policies.google.com/terms" className="underline" target="_blank" rel="noopener noreferrer">
+            <a href="https://policies.google.com/terms" className="underline hover:text-foreground transition-colors" target="_blank" rel="noopener noreferrer">
               Terms of Service
             </a>{" "}
             apply.
