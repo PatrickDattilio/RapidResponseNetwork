@@ -63,7 +63,8 @@ export async function PATCH(
     });
 
     return NextResponse.json(group);
-  } catch {
+  } catch (err) {
+    console.error("PATCH /api/groups/[id] error:", err);
     return NextResponse.json({ error: "Failed to update group" }, { status: 500 });
   }
 }
@@ -77,7 +78,8 @@ export async function DELETE(
   try {
     await prisma.group.delete({ where: { id } });
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (err) {
+    console.error("DELETE /api/groups/[id] error:", err);
     return NextResponse.json({ error: "Failed to delete group" }, { status: 500 });
   }
 }

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Script from "next/script";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +18,17 @@ import {
 import { US_STATES, FOCUS_AREAS, MEMBER_COUNT_OPTIONS } from "@/lib/constants";
 import { CheckCircle, Send } from "lucide-react";
 
+declare global {
+  interface Window {
+    grecaptcha: {
+      ready: (cb: () => void) => void;
+      execute: (siteKey: string, options: { action: string }) => Promise<string>;
+    };
+  }
+}
+
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+
 export default function SubmitPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -24,10 +36,27 @@ export default function SubmitPage() {
   const [error, setError] = useState("");
   const [focusAreas, setFocusAreas] = useState<string[]>([]);
 
+  const getRecaptchaToken = useCallback(async (): Promise<string | null> => {
+    if (!RECAPTCHA_SITE_KEY) return null;
+    try {
+      return await new Promise((resolve) => {
+        window.grecaptcha.ready(() => {
+          window.grecaptcha
+            .execute(RECAPTCHA_SITE_KEY, { action: "submit_group" })
+            .then(resolve);
+        });
+      });
+    } catch {
+      return null;
+    }
+  }, []);
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    const recaptchaToken = await getRecaptchaToken();
 
     const form = new FormData(e.currentTarget);
 
@@ -42,6 +71,7 @@ export default function SubmitPage() {
       description: form.get("description") as string,
       website: form.get("website") as string,
       memberCount: form.get("memberCount") as string,
+      recaptchaToken,
     };
 
     try {
@@ -272,7 +302,28 @@ export default function SubmitPage() {
             </>
           )}
         </Button>
+
+        {RECAPTCHA_SITE_KEY && (
+          <p className="text-xs text-center text-muted-foreground">
+            This site is protected by reCAPTCHA and the Google{" "}
+            <a href="https://policies.google.com/privacy" className="underline" target="_blank" rel="noopener noreferrer">
+              Privacy Policy
+            </a>{" "}
+            and{" "}
+            <a href="https://policies.google.com/terms" className="underline" target="_blank" rel="noopener noreferrer">
+              Terms of Service
+            </a>{" "}
+            apply.
+          </p>
+        )}
       </form>
+
+      {RECAPTCHA_SITE_KEY && (
+        <Script
+          src={`https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`}
+          strategy="lazyOnload"
+        />
+      )}
     </div>
   );
 }

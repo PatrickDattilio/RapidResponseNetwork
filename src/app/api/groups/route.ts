@@ -21,14 +21,43 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(groups);
 }
 
+async function verifyRecaptcha(token: string): Promise<boolean> {
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+  if (!secretKey) return true; // Skip verification if not configured
+
+  try {
+    const res = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(token)}`,
+    });
+
+    const data = await res.json();
+    return data.success && data.score >= 0.5;
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { name, city, state, contactName, contactEmail, phone, focusAreas, description, website, memberCount } = body;
+    const { name, city, state, contactName, contactEmail, phone, focusAreas, description, website, memberCount, recaptchaToken } = body;
 
     if (!name || !city || !state || !contactName || !contactEmail || !description || !memberCount) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    // Verify reCAPTCHA if configured
+    if (process.env.RECAPTCHA_SECRET_KEY) {
+      if (!recaptchaToken) {
+        return NextResponse.json({ error: "reCAPTCHA verification required" }, { status: 400 });
+      }
+      const isHuman = await verifyRecaptcha(recaptchaToken);
+      if (!isHuman) {
+        return NextResponse.json({ error: "reCAPTCHA verification failed. Please try again." }, { status: 403 });
+      }
     }
 
     // Geocode using Nominatim
@@ -67,7 +96,9 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(group, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Failed to create group" }, { status: 500 });
+  } catch (err) {
+    console.error("POST /api/groups error:", err);
+    const message = err instanceof Error ? err.message : "Failed to create group";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
