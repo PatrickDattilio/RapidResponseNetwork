@@ -51,6 +51,9 @@ model user {
 model session {
   id        String   @id
   expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime
+  updatedAt DateTime
   ipAddress String?
   userAgent String?
   userId    String
