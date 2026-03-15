@@ -78,27 +78,35 @@ export async function POST(request: NextRequest) {
       // Fall back to center of US if geocoding fails
     }
 
-    const group = await prisma.group.create({
-      data: {
-        name: String(name),
-        city: String(city),
-        state: String(state),
-        lat,
-        lng,
-        contactName: String(contactName),
-        contactEmail: String(contactEmail),
-        phone: phone ? String(phone) : null,
-        focusAreas: Array.isArray(focusAreas) ? focusAreas.map(String) : [],
-        description: String(description),
-        website: website ? String(website) : null,
-        memberCount: String(memberCount),
-      },
-    });
+    const createData = {
+      name: String(name),
+      city: String(city),
+      state: String(state),
+      lat,
+      lng,
+      contactName: String(contactName),
+      contactEmail: String(contactEmail),
+      phone: phone ? String(phone) : null,
+      focusAreas: Array.isArray(focusAreas) ? focusAreas.map(String) : [],
+      description: String(description),
+      website: website ? String(website) : null,
+      memberCount: String(memberCount),
+    };
+
+    console.log("Creating group with data:", JSON.stringify(createData));
+
+    const group = await prisma.group.create({ data: createData });
 
     return NextResponse.json(group, { status: 201 });
   } catch (err) {
     console.error("POST /api/groups error:", err);
-    const message = err instanceof Error ? err.message : "Failed to create group";
+    let message = "Failed to create group";
+    if (err instanceof Error) {
+      message = err.message;
+      if ("meta" in err) {
+        message += " | meta: " + JSON.stringify((err as Record<string, unknown>).meta);
+      }
+    }
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
